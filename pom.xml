@@ -10,6 +10,7 @@
     <version>1.0-SNAPSHOT</version>
     <modules>
         <module>lsd-importer</module>
+        <module>lsd-dataaccess</module>
     </modules>
 
     <properties>
