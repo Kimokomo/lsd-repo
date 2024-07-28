@@ -62,7 +62,7 @@ public class OdsFileReader {
                 .build();
     }
 
-    private Long extractCellContentAsLong(int row, int column, boolean isEmployeeFromTo, boolean isFrom) {
+    public Long extractCellContentAsLong(int row, int column, boolean isEmployeeFromTo, boolean isFrom) {
         String cellContent = extractCellContentAsString(row, column);
         if (cellContent == null || "G".equals(cellContent) || cellContent.isEmpty() || INSGESAMT.equals(cellContent)) {
             return null;
@@ -83,7 +83,7 @@ public class OdsFileReader {
         return Long.parseLong(cellContent.trim());
     }
 
-    private String extractCellContentAsString(int row, int column) {
+    public String extractCellContentAsString(int row, int column) {
         Object o = values[row][column];
         if (o instanceof Number) {
             return String.format("%.0f", o);
@@ -104,7 +104,7 @@ public class OdsFileReader {
         return !cell.toString().trim().isEmpty();
     }
 
-    private Object[][] getValidDataRows() {
+    public Object[][] getValidDataRows() {
         Object[][] values = dataRange.getValues();
 
         int columns = values[0].length;
