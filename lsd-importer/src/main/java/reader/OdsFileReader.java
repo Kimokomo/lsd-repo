@@ -9,7 +9,9 @@ import lombok.Getter;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 public class OdsFileReader {
@@ -39,30 +41,33 @@ public class OdsFileReader {
         }
     }
 
-    public LsdExchangeEntity read(int i) {
-        return LsdExchangeEntity.builder().
-                code(extractCellContentAsString(i, 0))
-                .description(extractCellContentAsString(i, 1))
-                .employeeFrom(extractCellContentAsLong(i, 3, true, true))
-                .employerTo(extractCellContentAsLong(i, 3, true, false))
-                .level(extractCellContentAsLong(i, 2, false, false))
-                .corporation(extractCellContentAsLong(i, 4, false, false))
-                .employee(extractCellContentAsLong(i, 5, false, false))
-                .employeeDependent(extractCellContentAsLong(i, 6, false, false))
-                .staffCost(extractCellContentAsLong(i, 7, false, false))
-                .revenue(extractCellContentAsLong(i, 8, false, false))
-                .sales(extractCellContentAsLong(i, 9, false, false))
-                .addedValue(extractCellContentAsLong(i, 10, false, false))
-                .buys(extractCellContentAsLong(i, 11, false, false))
-                .buysResale(extractCellContentAsLong(i, 12, false, false))
-                .outputValue(extractCellContentAsLong(i, 13, false, false))
-                .operatingSurplus(extractCellContentAsLong(i, 14, false, false))
-                .investment(extractCellContentAsLong(i, 15, false, false))
-                .year(year)
-                .build();
+    public List<LsdExchangeEntity> readAll() {
+        return Arrays.stream(values)
+                .map(row -> LsdExchangeEntity.builder()
+                        .code(extractCellContentAsString(row, 0))
+                        .description(extractCellContentAsString(row, 1))
+                        .employeeFrom(extractCellContentAsLong(row, 3, true, true))
+                        .employerTo(extractCellContentAsLong(row, 3, true, false))
+                        .level(extractCellContentAsLong(row, 2, false, false))
+                        .corporation(extractCellContentAsLong(row, 4, false, false))
+                        .employee(extractCellContentAsLong(row, 5, false, false))
+                        .employeeDependent(extractCellContentAsLong(row, 6, false, false))
+                        .staffCost(extractCellContentAsLong(row, 7, false, false))
+                        .revenue(extractCellContentAsLong(row, 8, false, false))
+                        .sales(extractCellContentAsLong(row, 9, false, false))
+                        .addedValue(extractCellContentAsLong(row, 10, false, false))
+                        .buys(extractCellContentAsLong(row, 11, false, false))
+                        .buysResale(extractCellContentAsLong(row, 12, false, false))
+                        .outputValue(extractCellContentAsLong(row, 13, false, false))
+                        .operatingSurplus(extractCellContentAsLong(row, 14, false, false))
+                        .investment(extractCellContentAsLong(row, 15, false, false))
+                        .year(year)
+                        .build())
+                .collect(Collectors.toList());
     }
 
-    public Long extractCellContentAsLong(int row, int column, boolean isEmployeeFromTo, boolean isFrom) {
+
+    public Long extractCellContentAsLong(Object[] row, int column, boolean isEmployeeFromTo, boolean isFrom) {
         String cellContent = extractCellContentAsString(row, column);
         if (cellContent == null || "G".equals(cellContent) || cellContent.isEmpty() || INSGESAMT.equals(cellContent)) {
             return null;
@@ -83,8 +88,8 @@ public class OdsFileReader {
         return Long.parseLong(cellContent.trim());
     }
 
-    public String extractCellContentAsString(int row, int column) {
-        Object o = values[row][column];
+    public String extractCellContentAsString(Object[] row, int column) {
+        Object o = row[column];
         if (o instanceof Number) {
             return String.format("%.0f", o);
         } else if (o instanceof String) {
@@ -92,7 +97,6 @@ public class OdsFileReader {
         }
         return o.toString();
     }
-
     private Long extractYearFromFilename() {
         return Long.parseLong(fileName.substring(FILENAME_YEAR_START_INDEX, FILENAME_YEAR_END_INDEX));
     }
