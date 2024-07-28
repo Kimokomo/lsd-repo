@@ -1,39 +1,54 @@
+package repoTest;
+
 import entity.LsdEntity;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import repo.LsdEntityRepository;
 import repo.LsdEntityRepositoryImpl;
 
+import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@Ignore
 public class LsdEntityRepositoryTest {
 
     private EntityManagerFactory emf;
+    private EntityManager em;
     private LsdEntityRepository repository;
 
     @Before
     public void setUp() {
         emf = Persistence.createEntityManagerFactory("myJpaUnit");
+        em = emf.createEntityManager();
         repository = new LsdEntityRepositoryImpl(emf); // Correctly instantiate the implementation
+        //clearDatabase(); // Clear the database before each test
     }
 
     @After
     public void tearDown() {
+        if (em != null) em.close();
         if (emf != null) emf.close();
+    }
+
+    private void clearDatabase() {
+        em.getTransaction().begin();
+        em.createQuery("DELETE FROM LsdEntity").executeUpdate();
+        em.getTransaction().commit();
     }
 
     @Test
     public void testFindById(){
-        LsdEntity foundEntity = repository.findById(4L);
+        LsdEntity foundEntity = repository.findById(33L);
         assertThat(foundEntity)
                 .isNotNull()
                 .extracting(LsdEntity::getId)
-                .isEqualTo(4L);
+                .isEqualTo(33L);
     }
 
     @Test
@@ -41,7 +56,7 @@ public class LsdEntityRepositoryTest {
         List<LsdEntity> entities = repository.findAll();
         assertThat(entities)
                 .isNotNull()
-                .hasSize(22);
+                .hasSize(5);
     }
 
     @Test

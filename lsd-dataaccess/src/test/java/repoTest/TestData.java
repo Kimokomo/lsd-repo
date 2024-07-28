@@ -1,3 +1,5 @@
+package repoTest;
+
 import entity.LsdEntity;
 import lombok.experimental.UtilityClass;
 
