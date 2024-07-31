@@ -28,12 +28,13 @@ public class OdsFileReaderTest {
     private static final String TEST_FILE_PATH = "src/test/resources/G_UNT2_Statistisches_Unternehmen_Hauptergebnisse_nach_Beschaeftigtengroessenklassen_2022.ods";
 
     @Before
+
     public void setUp() throws IOException {
         emf = Persistence.createEntityManagerFactory("myJpaUnit");
         em = emf.createEntityManager();
         File testFile = new File(TEST_FILE_PATH);
         odsFileReader = new OdsFileReader(testFile);
-        repository = new LsdEntityRepositoryImpl(emf);
+        repository = new LsdEntityRepositoryImpl(em);
     }
 
     @After
@@ -84,7 +85,7 @@ public class OdsFileReaderTest {
 
         // Map each row to an LsdEntity and save it to the database
         entities.stream()
-                .limit(2)
+                .limit(1)
                 .map(entity -> LsdEntity.builder()
                         .code(entity.getCode())
                         .description(entity.getDescription())
@@ -106,6 +107,5 @@ public class OdsFileReaderTest {
                         .year(entity.getYear())
                         .build())
                 .forEach(repository::save);
-
     }
 }

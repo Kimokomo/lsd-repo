@@ -1,28 +1,20 @@
-
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
-import javax.persistence.Persistence;
+import config.Config;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 public class App {
-    private static final EntityManagerFactory emf = Persistence.createEntityManagerFactory("myJpaUnit");
 
     public static void main(String[] args) {
-        EntityManager em = emf.createEntityManager();
-        EntityTransaction tx = em.getTransaction();
 
-        try {
-            tx.begin();
+        ApplicationContext context = new AnnotationConfigApplicationContext(Config.class);
 
-            tx.commit();
+        String[] beanNames = context.getBeanDefinitionNames();
 
-        } catch (Exception e) {
-            if (tx.isActive()) {
-                tx.rollback();
-            }
-            e.printStackTrace();
-        } finally {
-            em.close();
+        for (String beanName : beanNames) {
+            System.out.println(beanName);
         }
+
+        System.out.println("----------------------------------------");
+
     }
 }

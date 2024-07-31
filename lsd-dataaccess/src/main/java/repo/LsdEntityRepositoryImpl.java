@@ -1,93 +1,49 @@
 package repo;
 
 import entity.LsdEntity;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.*;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.List;
 
 public class LsdEntityRepositoryImpl implements LsdEntityRepository {
 
-    private final EntityManagerFactory emf;
+    @PersistenceContext(unitName = "myJpaUnit")
+    private final EntityManager entityManager;
 
-    public LsdEntityRepositoryImpl(EntityManagerFactory emf) {
-        this.emf = emf;
+
+    public LsdEntityRepositoryImpl(EntityManager entityManager) {
+        this.entityManager = entityManager;
     }
 
     @Override
     public void save(LsdEntity lsdEntity) {
-        EntityManager em = emf.createEntityManager();
-        EntityTransaction transaction = em.getTransaction();
-        try {
-            transaction.begin();
-            em.persist(lsdEntity);
-            transaction.commit();
-        } catch (Exception e) {
-            if (transaction.isActive()) {
-                transaction.rollback();
-            }
-            e.printStackTrace();
-        } finally {
-            em.close();
-        }
+        entityManager.persist(lsdEntity);
     }
 
     @Override
     public LsdEntity findById(Long id) {
-        EntityManager em = emf.createEntityManager();
-        try {
-            return em.find(LsdEntity.class, id);
-        } finally {
-            em.close();
-        }
+        return entityManager.find(LsdEntity.class, id);
     }
 
     @Override
     public List<LsdEntity> findAll() {
-        EntityManager em = emf.createEntityManager();
-        try {
-            Query query = em.createNativeQuery("SELECT * FROM lsd_entity", LsdEntity.class);
-            return query.getResultList();
-        } finally {
-            em.close();
-        }
+        return entityManager.createNativeQuery("SELECT * FROM lsd_entity", LsdEntity.class).getResultList();
     }
 
     @Override
+    @Transactional
     public void delete(Long id) {
-        EntityManager em = emf.createEntityManager();
-        EntityTransaction transaction = em.getTransaction();
-        try {
-            transaction.begin();
-            LsdEntity entity = em.find(LsdEntity.class, id);
-            if (entity != null) {
-                em.remove(entity);
-            }
-            transaction.commit();
-        } catch (Exception e) {
-            if (transaction.isActive()) {
-                transaction.rollback();
-            }
-            e.printStackTrace();
-        } finally {
-            em.close();
+        LsdEntity lsdEntity = findById(id);
+        if (lsdEntity != null) {
+            entityManager.remove(lsdEntity);
         }
     }
 
     @Override
+    @Transactional
     public void update(LsdEntity lsdEntity) {
-        EntityManager em = emf.createEntityManager();
-        EntityTransaction transaction = em.getTransaction();
-        try {
-            transaction.begin();
-            em.merge(lsdEntity);
-            transaction.commit();
-        } catch (Exception e) {
-            if (transaction.isActive()) {
-                transaction.rollback();
-            }
-            e.printStackTrace();
-        } finally {
-            em.close();
-        }
+        entityManager.merge(lsdEntity);
     }
 }

@@ -1,54 +1,37 @@
 package repoTest;
 
 import entity.LsdEntity;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import repo.LsdEntityRepository;
-import repo.LsdEntityRepositoryImpl;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-
-@Ignore
 public class LsdEntityRepositoryTest {
 
-    private EntityManagerFactory emf;
-    private EntityManager em;
+    @Autowired
     private LsdEntityRepository repository;
 
-    @Before
-    public void setUp() {
-        emf = Persistence.createEntityManagerFactory("myJpaUnit");
-        em = emf.createEntityManager();
-        repository = new LsdEntityRepositoryImpl(emf); // Correctly instantiate the implementation
-        //clearDatabase(); // Clear the database before each test
-    }
-
-    @After
-    public void tearDown() {
-        if (em != null) em.close();
-        if (emf != null) emf.close();
-    }
-
     private void clearDatabase() {
-        em.getTransaction().begin();
-        em.createQuery("DELETE FROM LsdEntity").executeUpdate();
-        em.getTransaction().commit();
+        repository.findAll().forEach(entity -> repository.delete(entity.getId()));
     }
 
     @Test
-    public void testFindById(){
-        LsdEntity foundEntity = repository.findById(33L);
+    public void testFindById() {
+        // Prepare test data
+        LsdEntity entity = LsdEntity.builder()
+                .code("TEST_CODE")
+                .build();
+        repository.save(entity);
+
+        // Perform the test
+        LsdEntity foundEntity = repository.findById(entity.getId());
         assertThat(foundEntity)
                 .isNotNull()
                 .extracting(LsdEntity::getId)
-                .isEqualTo(33L);
+                .isEqualTo(entity.getId());
     }
 
     @Test
