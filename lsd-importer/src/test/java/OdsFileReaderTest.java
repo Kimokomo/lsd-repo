@@ -10,6 +10,7 @@ import repo.LsdEntityRepositoryImpl;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
 import java.io.File;
 import java.io.IOException;
@@ -81,31 +82,42 @@ public class OdsFileReaderTest {
 
     @Test
     public void saveFromFileToDatabase() {
-        List<LsdExchangeEntity> entities = odsFileReader.readAll();
+        EntityTransaction transaction = em.getTransaction();
+        try {
+            transaction.begin();
+            List<LsdExchangeEntity> entities = odsFileReader.readAll();
 
-        // Map each row to an LsdEntity and save it to the database
-        entities.stream()
-                .limit(1)
-                .map(entity -> LsdEntity.builder()
-                        .code(entity.getCode())
-                        .description(entity.getDescription())
-                        .employeeFrom(entity.getEmployeeFrom())
-                        .employerTo(entity.getEmployerTo())
-                        .level(entity.getLevel())
-                        .corporation(entity.getCorporation())
-                        .employee(entity.getEmployee())
-                        .employeeDependent(entity.getEmployeeDependent())
-                        .staffCost(entity.getStaffCost())
-                        .revenue(entity.getRevenue())
-                        .sales(entity.getSales())
-                        .addedValue(entity.getAddedValue())
-                        .buys(entity.getBuys())
-                        .buysResale(entity.getBuysResale())
-                        .outputValue(entity.getOutputValue())
-                        .operatingSurplus(entity.getOperatingSurplus())
-                        .investment(entity.getInvestment())
-                        .year(entity.getYear())
-                        .build())
-                .forEach(repository::save);
+            // Map each row to an LsdEntity and save it to the database
+            entities.stream()
+                   // .limit(1)
+                    .map(entity -> LsdEntity.builder()
+                            .code(entity.getCode())
+                            .description(entity.getDescription())
+                            .employeeFrom(entity.getEmployeeFrom())
+                            .employerTo(entity.getEmployerTo())
+                            .level(entity.getLevel())
+                            .corporation(entity.getCorporation())
+                            .employee(entity.getEmployee())
+                            .employeeDependent(entity.getEmployeeDependent())
+                            .staffCost(entity.getStaffCost())
+                            .revenue(entity.getRevenue())
+                            .sales(entity.getSales())
+                            .addedValue(entity.getAddedValue())
+                            .buys(entity.getBuys())
+                            .buysResale(entity.getBuysResale())
+                            .outputValue(entity.getOutputValue())
+                            .operatingSurplus(entity.getOperatingSurplus())
+                            .investment(entity.getInvestment())
+                            .year(entity.getYear())
+                            .build())
+                    .forEach(repository::save);
+
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction.isActive()) {
+                transaction.rollback();
+            }
+            e.printStackTrace(); // Print the exception for debugging
+        }
     }
 }
