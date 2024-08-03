@@ -1,6 +1,6 @@
-package repoTest;
+package root.repoTest;
 
-import entity.LsdEntity;
+import root.entity.LsdEntity;
 import lombok.experimental.UtilityClass;
 
 @UtilityClass

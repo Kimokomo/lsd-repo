@@ -1,48 +1,28 @@
-import entity.LsdEntity;
-import entity.LsdExchangeEntity;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
-import reader.OdsFileReader;
-import repo.LsdEntityRepository;
-import repo.LsdEntityRepositoryImpl;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import root.config.Config;
+import root.entity.LsdEntity;
+import root.entity.LsdExchangeEntity;
+import root.reader.OdsFileReader;
+import root.repo.LsdEntityRepository;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
-import javax.persistence.Persistence;
-import java.io.File;
-import java.io.IOException;
+import javax.transaction.Transactional;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@Ignore
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = Config.class)
 public class OdsFileReaderTest {
 
-    private EntityManagerFactory emf;
-    private EntityManager em;
+    @Autowired
     private LsdEntityRepository repository;
+    @Autowired
     private OdsFileReader odsFileReader;
 
-    private static final String TEST_FILE_PATH = "src/test/resources/G_UNT2_Statistisches_Unternehmen_Hauptergebnisse_nach_Beschaeftigtengroessenklassen_2022.ods";
-
-    @Before
-
-    public void setUp() throws IOException {
-        emf = Persistence.createEntityManagerFactory("myJpaUnit");
-        em = emf.createEntityManager();
-        File testFile = new File(TEST_FILE_PATH);
-        odsFileReader = new OdsFileReader(testFile);
-        repository = new LsdEntityRepositoryImpl(em);
-    }
-
-    @After
-    public void tearDown() {
-        if (em != null) em.close();
-        if (emf != null) emf.close();
-    }
 
     @Test
     public void testExtractYearFromFilename() {
@@ -81,43 +61,34 @@ public class OdsFileReaderTest {
     }
 
     @Test
+    @Transactional
     public void saveFromFileToDatabase() {
-        EntityTransaction transaction = em.getTransaction();
-        try {
-            transaction.begin();
-            List<LsdExchangeEntity> entities = odsFileReader.readAll();
 
-            // Map each row to an LsdEntity and save it to the database
-            entities.stream()
-                   // .limit(1)
-                    .map(entity -> LsdEntity.builder()
-                            .code(entity.getCode())
-                            .description(entity.getDescription())
-                            .employeeFrom(entity.getEmployeeFrom())
-                            .employerTo(entity.getEmployerTo())
-                            .level(entity.getLevel())
-                            .corporation(entity.getCorporation())
-                            .employee(entity.getEmployee())
-                            .employeeDependent(entity.getEmployeeDependent())
-                            .staffCost(entity.getStaffCost())
-                            .revenue(entity.getRevenue())
-                            .sales(entity.getSales())
-                            .addedValue(entity.getAddedValue())
-                            .buys(entity.getBuys())
-                            .buysResale(entity.getBuysResale())
-                            .outputValue(entity.getOutputValue())
-                            .operatingSurplus(entity.getOperatingSurplus())
-                            .investment(entity.getInvestment())
-                            .year(entity.getYear())
-                            .build())
-                    .forEach(repository::save);
+        List<LsdExchangeEntity> entities = odsFileReader.readAll();
 
-            transaction.commit();
-        } catch (Exception e) {
-            if (transaction.isActive()) {
-                transaction.rollback();
-            }
-            e.printStackTrace(); // Print the exception for debugging
-        }
+        // Map each row to an LsdEntity and save it to the database
+        entities.stream()
+                // .limit(1)
+                .map(entity -> LsdEntity.builder()
+                        .code(entity.getCode())
+                        .description(entity.getDescription())
+                        .employeeFrom(entity.getEmployeeFrom())
+                        .employerTo(entity.getEmployerTo())
+                        .level(entity.getLevel())
+                        .corporation(entity.getCorporation())
+                        .employee(entity.getEmployee())
+                        .employeeDependent(entity.getEmployeeDependent())
+                        .staffCost(entity.getStaffCost())
+                        .revenue(entity.getRevenue())
+                        .sales(entity.getSales())
+                        .addedValue(entity.getAddedValue())
+                        .buys(entity.getBuys())
+                        .buysResale(entity.getBuysResale())
+                        .outputValue(entity.getOutputValue())
+                        .operatingSurplus(entity.getOperatingSurplus())
+                        .investment(entity.getInvestment())
+                        .year(entity.getYear())
+                        .build())
+                .forEach(repository::save);
     }
 }

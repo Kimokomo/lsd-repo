@@ -1,9 +1,9 @@
-package reader;
+package root.reader;
 
 import com.github.miachm.sods.Range;
 import com.github.miachm.sods.Sheet;
 import com.github.miachm.sods.SpreadSheet;
-import entity.LsdExchangeEntity;
+import root.entity.LsdExchangeEntity;
 import lombok.Getter;
 
 import java.io.File;

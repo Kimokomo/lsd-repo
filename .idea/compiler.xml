@@ -20,4 +20,10 @@
       </profile>
     </annotationProcessing>
   </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="lsd-dataaccess" options="" />
+      <module name="lsd-importer" options="" />
+    </option>
+  </component>
 </project>

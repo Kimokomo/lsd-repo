@@ -1,7 +1,7 @@
-package repo;
+package root.repo;
 
-import entity.LsdEntity;
 import org.springframework.transaction.annotation.Transactional;
+import root.entity.LsdEntity;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -18,16 +18,19 @@ public class LsdEntityRepositoryImpl implements LsdEntityRepository {
     }
 
     @Override
+    @Transactional
     public void save(LsdEntity lsdEntity) {
         entityManager.persist(lsdEntity);
     }
 
     @Override
+    @Transactional
     public LsdEntity findById(Long id) {
         return entityManager.find(LsdEntity.class, id);
     }
 
     @Override
+    @Transactional
     public List<LsdEntity> findAll() {
         return entityManager.createNativeQuery("SELECT * FROM lsd_entity", LsdEntity.class).getResultList();
     }

@@ -1,24 +1,15 @@
-package entity;
+package root.entity;
 
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
-import javax.persistence.*;
-import java.time.LocalDateTime;
-
+@Builder
 @Getter
 @Setter
 @ToString
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-@Table(name = "lsd_entity", schema = "lsd")
-@Entity
-public class LsdEntity {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
+public class LsdExchangeEntity {
     private String code;
     private String description;
     private Long employeeFrom;
@@ -37,7 +28,4 @@ public class LsdEntity {
     private Long operatingSurplus;
     private Long investment;
     private Long year;
-    private LocalDateTime tstamp;
-
-
 }
