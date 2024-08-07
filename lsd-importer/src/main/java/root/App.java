@@ -1,17 +1,20 @@
 package root;
 
-import root.entity.LsdExchangeEntity;
-import root.reader.OdsFileReader;
-
-import java.io.File;
-import java.util.List;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 public class App {
     public static void main(String[] args) {
 
-        OdsFileReader odsFileReader = new OdsFileReader(new File("D:\\lsd_\\lsd-importer\\src\\main\\resources\\G_UNT2_Statistisches_Unternehmen_Hauptergebnisse_nach_Beschaeftigtengroessenklassen_2022.ods"));
-        List<LsdExchangeEntity> readAllList = odsFileReader.readAll();
-        readAllList.forEach(System.out::println);
+        ApplicationContext context = new AnnotationConfigApplicationContext("root");
+
+        String[] beanNames = context.getBeanDefinitionNames();
+
+        for (String beanName : beanNames) {
+            System.out.println(beanName);
+        }
+
+        System.out.println("----------------------------------------");
     }
 }
 

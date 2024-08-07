@@ -67,7 +67,7 @@ public class Config {
     public LsdEntityRepositoryImpl lsdEntityRepository(EntityManager entityManager) {
         return new LsdEntityRepositoryImpl(entityManager);
     }
-    private static final String TEST_FILE_PATH = "src/test/resources/G_UNT2_Statistisches_Unternehmen_Hauptergebnisse_nach_Beschaeftigtengroessenklassen_2022.ods";
+    private static final String TEST_FILE_PATH = "D:\\lsd_\\lsd-importer\\src\\test\\resources\\G_UNT2_Statistisches_Unternehmen_Hauptergebnisse_nach_Beschaeftigtengroessenklassen_2022.ods";
 
     @Bean
     public File file() {
